@@ -1,0 +1,329 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Robert, will you be my valentine?</title>
+  <style>
+    :root {
+      --bg1: #ffedf3;
+      --bg2: #ffe3ee;
+      --text: #2b2b2b;
+      --yes: #22c55e;
+      --no: #ef4444;
+      --card: rgba(255,255,255,.75);
+      --shadow: 0 18px 45px rgba(0,0,0,.12);
+    }
+
+    * { box-sizing: border-box; }
+    html, body { height: 100%; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+      color: var(--text);
+      background: radial-gradient(1200px 800px at 25% 20%, var(--bg2), var(--bg1));
+      overflow: hidden;
+    }
+
+    .hearts {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      opacity: 0.6;
+      filter: blur(.2px);
+    }
+    .hearts::before, .hearts::after {
+      content: "♥ ♥ ♥ ♥ ♥ ♥ ♥ ♥ ♥ ♥ ♥ ♥ ♥ ♥ ♥ ♥ ♥ ♥ ♥ ♥";
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 26px;
+      letter-spacing: 10px;
+      animation: floaty 10s linear infinite;
+      opacity: .12;
+      white-space: nowrap;
+    }
+    .hearts::after {
+      top: 45%;
+      font-size: 34px;
+      letter-spacing: 14px;
+      animation-duration: 14s;
+      opacity: .08;
+    }
+    @keyframes floaty {
+      0% { top: 110%; }
+      100% { top: -20%; }
+    }
+
+    .wrap {
+      height: 100%;
+      display: grid;
+      place-items: center;
+      padding: 24px;
+    }
+
+    .card {
+      width: min(900px, 94vw);
+      background: var(--card);
+      backdrop-filter: blur(8px);
+      border: 1px solid rgba(255,255,255,.6);
+      border-radius: 24px;
+      box-shadow: var(--shadow);
+      padding: clamp(18px, 4vw, 38px);
+      position: relative;
+    }
+
+    h1 {
+      margin: 0 0 22px;
+      text-align: center;
+      font-size: clamp(28px, 5vw, 52px);
+      line-height: 1.1;
+    }
+
+    .arena {
+      position: relative;
+      height: min(52vh, 460px);
+      border-radius: 18px;
+      background: rgba(255,255,255,.55);
+      border: 1px dashed rgba(0,0,0,.12);
+      overflow: hidden;
+      display: grid;
+      place-items: center;
+    }
+
+    .yes-btn {
+      font-size: clamp(44px, 7vw, 80px);
+      font-weight: 900;
+      padding: 14px 40px;
+      border-radius: 18px;
+      border: none;
+      cursor: pointer;
+      background: var(--yes);
+      color: white;
+      box-shadow: 0 12px 25px rgba(34,197,94,.35);
+      transform: translateZ(0);
+      transition: transform .12s ease, filter .12s ease;
+      z-index: 2;
+    }
+    .yes-btn:hover { transform: scale(1.04); filter: brightness(1.03); }
+    .yes-btn:active { transform: scale(0.98); }
+
+    .no-btn {
+      position: absolute;
+      left: 70%;
+      top: 62%;
+      transform: translate(-50%, -50%);
+      font-size: 22px;
+      font-weight: 800;
+      padding: 10px 18px;
+      border-radius: 999px;
+      border: none;
+      cursor: not-allowed;
+      background: var(--no);
+      color: white;
+      box-shadow: 0 10px 20px rgba(239,68,68,.28);
+      user-select: none;
+      touch-action: none;
+      z-index: 3;
+    }
+
+    .hint {
+      margin: 18px 0 0;
+      text-align: center;
+      opacity: .75;
+      font-size: 14px;
+    }
+
+    /* Success screen */
+    .success {
+      display: none;
+      text-align: center;
+      padding: 26px 10px 6px;
+    }
+    .success h2 {
+      margin: 0 0 14px;
+      font-size: clamp(22px, 3.5vw, 34px);
+    }
+    .meme {
+      width: min(520px, 92%);
+      aspect-ratio: 1 / 1;
+      border-radius: 18px;
+      border: 1px solid rgba(0,0,0,.12);
+      box-shadow: 0 16px 36px rgba(0,0,0,.14);
+      background: white;
+      overflow: hidden;
+      margin: 0 auto;
+      display: grid;
+      place-items: center;
+    }
+    .meme img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+    .small {
+      margin-top: 12px;
+      opacity: .7;
+      font-size: 13px;
+    }
+
+    /* make it feel snappy on mobile */
+    @media (max-width: 480px) {
+      .no-btn { font-size: 18px; }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="hearts" aria-hidden="true"></div>
+
+  <div class="wrap">
+    <div class="card" id="card">
+      <div id="questionScreen">
+        <h1>Robert, will you be my valentine?</h1>
+
+        <div class="arena" id="arena">
+          <button class="yes-btn" id="yesBtn">YES</button>
+          <button class="no-btn" id="noBtn" aria-label="no">no</button>
+        </div>
+
+        <p class="hint">Tip: “no” is feeling shy today 😇</p>
+      </div>
+
+      <div class="success" id="successScreen">
+        <h2>Congratulations, you’ll not regret it 🎉</h2>
+        <div class="meme">
+          <!-- Replace this src with ANY meme image/gif URL you like -->
+          <img
+            id="memeImg"
+            alt="congratulations meme"
+            src="https://media.giphy.com/media/111ebonMs90YLu/giphy.gif"
+          />
+        </div>
+        <div class="small">Send this link to Robert 😄</div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const arena = document.getElementById("arena");
+    const noBtn = document.getElementById("noBtn");
+    const yesBtn = document.getElementById("yesBtn");
+    const questionScreen = document.getElementById("questionScreen");
+    const successScreen = document.getElementById("successScreen");
+
+    // How close the cursor can get before "no" jumps away
+    const DODGE_RADIUS = 120; // px
+    // Extra padding so the button stays inside the arena
+    const EDGE_PADDING = 14; // px
+    // Add a bit of chaos
+    const JITTER = 40; // px
+
+    function clamp(n, min, max) {
+      return Math.max(min, Math.min(max, n));
+    }
+
+    function randomInt(min, max) {
+      return Math.floor(Math.random() * (max - min + 1)) + min;
+    }
+
+    function moveNoButton(awayFromX, awayFromY) {
+      const aRect = arena.getBoundingClientRect();
+      const bRect = noBtn.getBoundingClientRect();
+
+      const maxX = aRect.width - bRect.width - EDGE_PADDING;
+      const maxY = aRect.height - bRect.height - EDGE_PADDING;
+
+      // Current position (relative to arena)
+      const currentLeft = parseFloat(noBtn.style.left) || (aRect.width * 0.7);
+      const currentTop  = parseFloat(noBtn.style.top)  || (aRect.height * 0.62);
+
+      // Vector away from cursor
+      const dx = currentLeft - awayFromX;
+      const dy = currentTop - awayFromY;
+      const len = Math.hypot(dx, dy) || 1;
+
+      // Move a fixed step plus random jitter
+      const step = DODGE_RADIUS * 0.9;
+      let newLeft = currentLeft + (dx / len) * step + randomInt(-JITTER, JITTER);
+      let newTop  = currentTop  + (dy / len) * step + randomInt(-JITTER, JITTER);
+
+      // If cursor is centered on it or vector too small, jump randomly
+      if (Math.hypot(dx, dy) < 20) {
+        newLeft = randomInt(EDGE_PADDING, maxX);
+        newTop  = randomInt(EDGE_PADDING, maxY);
+      }
+
+      // Clamp inside arena
+      newLeft = clamp(newLeft, EDGE_PADDING, maxX);
+      newTop  = clamp(newTop, EDGE_PADDING, maxY);
+
+      noBtn.style.left = newLeft + "px";
+      noBtn.style.top  = newTop + "px";
+    }
+
+    // Set initial absolute positioning in px (so our math is stable)
+    function initNoButton() {
+      const aRect = arena.getBoundingClientRect();
+      const bRect = noBtn.getBoundingClientRect();
+
+      // place near bottom-right but inside
+      let left = aRect.width * 0.75 - bRect.width / 2;
+      let top  = aRect.height * 0.65 - bRect.height / 2;
+
+      left = clamp(left, EDGE_PADDING, aRect.width - bRect.width - EDGE_PADDING);
+      top  = clamp(top, EDGE_PADDING, aRect.height - bRect.height - EDGE_PADDING);
+
+      noBtn.style.left = left + "px";
+      noBtn.style.top = top + "px";
+    }
+
+    // Mouse move: if cursor gets close, dodge
+    function onPointerMove(e) {
+      const aRect = arena.getBoundingClientRect();
+      const bRect = noBtn.getBoundingClientRect();
+
+      const mouseX = e.clientX - aRect.left;
+      const mouseY = e.clientY - aRect.top;
+
+      // Button center (relative to arena)
+      const btnCenterX = (bRect.left - aRect.left) + bRect.width / 2;
+      const btnCenterY = (bRect.top - aRect.top) + bRect.height / 2;
+
+      const dist = Math.hypot(mouseX - btnCenterX, mouseY - btnCenterY);
+
+      if (dist < DODGE_RADIUS) {
+        moveNoButton(mouseX, mouseY);
+      }
+    }
+
+    // Prevent "no" from being clickable on touch by moving when finger approaches too
+    arena.addEventListener("pointermove", onPointerMove);
+
+    // Also dodge if someone tries to focus/tab onto it
+    noBtn.addEventListener("focus", () => {
+      const aRect = arena.getBoundingClientRect();
+      moveNoButton(aRect.width / 2, aRect.height / 2);
+      yesBtn.focus();
+    });
+
+    // YES click: reveal meme screen
+    yesBtn.addEventListener("click", () => {
+      questionScreen.style.display = "none";
+      successScreen.style.display = "block";
+      document.title = "Congratulations!";
+      // confetti-ish hearts speed up
+      document.querySelector(".hearts").style.opacity = "0.8";
+    });
+
+    // Keep "no" inside on resize
+    window.addEventListener("resize", () => {
+      initNoButton();
+    });
+
+    // Initialize
+    initNoButton();
+  </script>
+</body>
+</html>
