@@ -1,0 +1,203 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Robert, will you be my valentine?</title>
+
+  <style>
+    body {
+      margin: 0;
+      height: 100vh;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+      background: radial-gradient(circle at top, #ffe6ef, #ffd6e6);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    .card {
+      background: rgba(255,255,255,0.92);
+      padding: 40px;
+      border-radius: 20px;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+      width: min(820px, 92%);
+      text-align: center;
+      position: relative;
+    }
+
+    h1 {
+      font-size: clamp(28px, 5vw, 50px);
+      margin: 0 0 26px;
+      line-height: 1.1;
+    }
+
+    .arena {
+      position: relative;
+      height: min(52vh, 420px);
+      border-radius: 16px;
+      background: #fff0f6;
+      border: 2px dashed #ffb3cc;
+      display: grid;
+      place-items: center;
+      overflow: hidden;
+    }
+
+    .yes-btn {
+      font-size: clamp(52px, 7vw, 78px);
+      padding: 16px 44px;
+      border-radius: 18px;
+      border: none;
+      cursor: pointer;
+      background: #22c55e;
+      color: white;
+      font-weight: 900;
+      box-shadow: 0 12px 25px rgba(34,197,94,.4);
+      transition: transform 0.12s ease, filter 0.12s ease;
+    }
+
+    .yes-btn:hover { transform: scale(1.05); filter: brightness(1.03); }
+    .yes-btn:active { transform: scale(0.98); }
+
+    .no-btn {
+      position: absolute;
+      padding: 10px 20px;
+      font-size: 22px;
+      border-radius: 999px;
+      border: none;
+      background: #ef4444;
+      color: white;
+      font-weight: 800;
+      cursor: not-allowed;
+      user-select: none;
+      touch-action: none;
+      left: 70%;
+      top: 65%;
+      transform: translate(-50%, -50%);
+    }
+
+    .success {
+      display: none;
+      padding-top: 6px;
+    }
+
+    .success h2 {
+      margin: 0 0 18px;
+      font-size: clamp(22px, 3.8vw, 34px);
+      line-height: 1.15;
+    }
+
+    .memeWrap {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 6px 0 0;
+    }
+
+    /* Make the Tenor embed look nice and consistent */
+    .tenor-gif-embed {
+      width: min(520px, 96%);
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 16px 35px rgba(0,0,0,.2);
+      background: white;
+      border: 1px solid rgba(0,0,0,.12);
+    }
+
+    .tiny {
+      margin-top: 10px;
+      opacity: .7;
+      font-size: 13px;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="card">
+
+    <div id="question">
+      <h1>Robert, will you be my valentine?</h1>
+
+      <div class="arena" id="arena">
+        <button class="yes-btn" id="yesBtn">YES</button>
+        <button class="no-btn" id="noBtn" aria-label="no">no</button>
+      </div>
+    </div>
+
+    <div class="success" id="success">
+      <h2>Congratulations 🎉<br>No ragrets. Not even one.</h2>
+
+      <div class="memeWrap">
+        <!-- Tenor embed (no image upload needed) -->
+        <div class="tenor-gif-embed"
+             data-postid="4946750"
+             data-share-method="host"
+             data-aspect-ratio="1.4352941176"
+             data-width="100%">
+          <a href="https://tenor.com/view/no-ragrets-no-regrets-fail-gif-4946750">No Ragrets No Regrets GIF</a>
+          from <a href="https://tenor.com/search/no+ragrets-gifs">No Ragrets GIFs</a>
+        </div>
+      </div>
+
+      <div class="tiny">Send him the link 😄</div>
+    </div>
+
+  </div>
+
+  <!-- Tenor embed script -->
+  <script async src="https://tenor.com/embed.js"></script>
+
+  <script>
+    const arena = document.getElementById("arena");
+    const noBtn = document.getElementById("noBtn");
+    const yesBtn = document.getElementById("yesBtn");
+    const question = document.getElementById("question");
+    const success = document.getElementById("success");
+
+    const DODGE_RADIUS = 120;
+
+    function moveNo() {
+      const a = arena.getBoundingClientRect();
+      const b = noBtn.getBoundingClientRect();
+
+      const maxX = a.width - b.width;
+      const maxY = a.height - b.height;
+
+      const x = Math.random() * Math.max(0, maxX);
+      const y = Math.random() * Math.max(0, maxY);
+
+      noBtn.style.left = x + "px";
+      noBtn.style.top = y + "px";
+      noBtn.style.transform = "translate(0, 0)";
+    }
+
+    function distToButtonCenter(clientX, clientY) {
+      const b = noBtn.getBoundingClientRect();
+      const cx = b.left + b.width / 2;
+      const cy = b.top + b.height / 2;
+      return Math.hypot(clientX - cx, clientY - cy);
+    }
+
+    arena.addEventListener("pointermove", (e) => {
+      if (distToButtonCenter(e.clientX, e.clientY) < DODGE_RADIUS) {
+        moveNo();
+      }
+    });
+
+    noBtn.addEventListener("pointerdown", (e) => {
+      e.preventDefault();
+      moveNo();
+    });
+
+    yesBtn.addEventListener("click", () => {
+      question.style.display = "none";
+      success.style.display = "block";
+      document.title = "Congratulations 🎉";
+    });
+
+    // initial random placement
+    moveNo();
+  </script>
+</body>
+</html>
